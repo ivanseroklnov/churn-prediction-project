@@ -16,16 +16,17 @@ Build an accurate and interpretable ML model to identify customers with a high p
 
 ---
 
-## Data
+## Данные
 **Source:** Telecom Customer Churn Dataset (Maven Analytics)
 https://www.kaggle.com/datasets/shilongzhuang/telecom-customer-churn-by-maven-analytics/data
 
 ---
+## Краткое резюме
 В качестве максимизируемой метрики выбрал PR-AUC, так как присутствует дисбаланс классов (ушедших клиентов ~28% от всех клиентов). Соответственно нужен баланс между recall и precision, который будет обеспечен как раз таки максимальным PR-AUC. Если максимизировать ROC-AUC, есть риск, что модель будет иметь высокий ROC-AUC за счет хорошего распознавания Stayed клиентов (класс = 0), наша же задача - находить Churned клиентов (класс = 1)
 
-Baseline: LogisticRegression.
+**Baseline**: LogisticRegression.
 
-Метрики Baseline модели:
+**Метрики Baseline модели**:
 accuracy = 0.84
 precision = 0.7
 recall = 0.74
@@ -35,19 +36,19 @@ PR-AUC = 0.778
 
 Были рассмотрены SVC, RandomForestClassifier, LGBMClassifier. Лучшей моделью оказался CatBoostClassifier.
 
-Итоговая модель: CatBoostClassifier.
+Итоговая модель: **CatBoostClassifier**.
 
 
-Признаки: 'Gender', 'Age', 'Married', 'Number of Dependents', 'Number of Referrals', 'Tenure in Months', 'Phone Service',  'Avg Monthly Long Distance Charges', 'Multiple Lines', 'Internet Service', 'Contract', 'Paperless Billing', 'Payment Method',  'Monthly Charge', 'Total Refunds', 'Total Extra Data Charges',  'monthly_charge / tenure' (считается как частное столбцов 'Monthly Charge' и 'Tenure in Months').
+**Признаки**: 'Gender', 'Age', 'Married', 'Number of Dependents', 'Number of Referrals', 'Tenure in Months', 'Phone Service',  'Avg Monthly Long Distance Charges', 'Multiple Lines', 'Internet Service', 'Contract', 'Paperless Billing', 'Payment Method',  'Monthly Charge', 'Total Refunds', 'Total Extra Data Charges',  'monthly_charge / tenure' (считается как частное столбцов 'Monthly Charge' и 'Tenure in Months').
 
-Выбор порога:
+**Выбор порога**:
 При пороге 0.35 f1 = 0.77. Наилучший баланс между recall и precision. Универсальный порог.
 
 При пороге 0.2-0.25 модель нацелена на максимизацию recall: выявляется большинство потенциально уходящих клиентов, однако возрастает число ложных срабатываний. Такой порог подходит, если бизнес готов тратить ресурсы на клиентов, которые в итоге не уйдут, ради минимизации пропущенных уходов
 
 При пороге 0.4 - 0.5 модель нацелена на максимизацию precision, но с таким порогом снижается recall. Подходит в том случае, когда ресурсы на удержание ограничены.
 
-Метрики итоговой модели (порог = 0.33):
+**Метрики итоговой модели** (порог = 0.33):
 accuracy = 0.86
 precision = 0.73
 recall = 0.805
@@ -57,7 +58,7 @@ PR-AUC = 0.865
 
 Интерпретация модели выполнена на обучающей выборке для анализа выученных зависимостей. Для оценки значимости признака - mean(abs(SHAP)), для оценки изменения признака на итоговый прогноз - Partial Dependence Plots (PDP).
 
-Факторы оттока:
+**Факторы оттока**:
 <img width="1326" height="692" alt="image" src="https://github.com/user-attachments/assets/2d2cd967-1ae4-406f-a2b7-9068732c6961" />
 
 1) Тип контракта - ключевой фактор оттока. Клиенты с помесячной контрактом имеют наибольшую вероятность ухода. Клиенты с двухгодовым контрактом имеют наименьшую  вероятность ухода. Если контракт на 1 год - вероятность уйти несколько выше, чем у клиентов с двухгодичным контрактом.
